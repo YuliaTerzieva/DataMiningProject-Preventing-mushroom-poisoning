@@ -73,17 +73,6 @@ def evaluate_algorithm(dataset, algorithm, n_folds, *args):
 		scores.append(accuracy)
 	return scores
 
-# Split the dataset by class values, returns a dictionary
-def separate_by_class(dataset):
-	separated = dict()
-	for i in range(len(dataset)):
-		vector = dataset[i]
-		class_value = vector[-1]
-		if (class_value not in separated):
-			separated[class_value] = list()
-		separated[class_value].append(vector)
-	return separated
-
 # Calculate the mean of a list of numbers
 def mean(numbers):
 	return sum(numbers)/float(len(numbers))
@@ -143,16 +132,38 @@ def naive_bayes(train, test):
 		predictions.append(output)
 	return(predictions)
 
-# Test Naive Bayes on Iris Dataset
-seed(1)
-filename = 'iris.csv'
-dataset = load_csv(filename)
-for i in range(len(dataset[0])-1):
-	str_column_to_float(dataset, i)
-# convert class column to integers
-str_column_to_int(dataset, len(dataset[0])-1)
-# evaluate algorithm
-n_folds = 5
-scores = evaluate_algorithm(dataset, naive_bayes, n_folds)
-print('Scores: %s' % scores)
-print('Mean Accuracy: %.3f%%' % (sum(scores)/float(len(scores))))
+##################################
+# Step 1 - separate by class =>
+# Split the dataset by class values, returns a dictionary
+def separate_by_class(filename):
+	separated = dict()
+	dataset = open(filename, "r")
+	line = dataset.readline()
+	while line != '':  # The EOF char is an empty string
+		data = line.split(r",")
+		vector = data[1:]
+		class_value = "edible" if data[0] == "e" else "poisonous"
+		if (class_value not in separated):
+			separated[class_value] = list()
+		separated[class_value].append(vector)
+		line = dataset.readline()
+	return separated
+
+# Test Naive Bayes on Mushroom dataset
+dictionary = separate_by_class("Mushroom dataset/agaricus-lepiota.data")
+print(dictionary)
+
+# seed(1)
+# filename = 'iris.csv'
+# dataset = load_csv(filename)
+# for i in range(len(dataset[0])-1):
+# 	str_column_to_float(dataset, i)
+# # convert class column to integers
+# str_column_to_int(dataset, len(dataset[0])-1)
+# # evaluate algorithm
+# n_folds = 5
+# scores = evaluate_algorithm(dataset, naive_bayes, n_folds)
+# print('Scores: %s' % scores)
+# print('Mean Accuracy: %.3f%%' % (sum(scores)/float(len(scores))))
+
+
