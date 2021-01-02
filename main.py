@@ -1,39 +1,72 @@
-# Naive Bayes On The Iris Dataset
-from csv import reader
+from _csv import reader
 from random import seed
 from random import randrange
 from math import sqrt
 from math import exp
 from math import pi
 
-# Load a CSV file
-def load_csv(filename):
-	dataset = list()
-	with open(filename, 'r') as file:
-		csv_reader = reader(file)
-		for row in csv_reader:
-			if not row:
-				continue
-			dataset.append(row)
-	return dataset
+##################################
+# Step 1 - separate by class =>
+# Split the dataset by class values, returns a dictionary
+def separate_by_class(filename):
+	separated = dict()
+	dataset = open(filename, "r")
+	line = dataset.readline()
+	while line != '':  # The EOF char is an empty string
+		line = line[:-1] # removing the new line char
+		data = line.split(r",")
+		vector = data[1:] # those are all the attributes
+		class_value = "edible" if data[0] == "e" else "poisonous"
+		if (class_value not in separated):
+			separated[class_value] = list()
+		separated[class_value].append(vector)
+		line = dataset.readline()
+	return separated
 
-# Convert string column to float
-def str_column_to_float(dataset, column):
-	for row in dataset:
-		row[column] = float(row[column].strip())
+# Step 2 - summarize Dataset =>
+# Calculate the mean of a list of numbers
+def mean(numbers):
+	return sum(numbers)/float(len(numbers))
 
-# Convert string column to integer
-def str_column_to_int(dataset, column):
-	class_values = [row[column] for row in dataset]
-	unique = set(class_values)
-	lookup = dict()
-	for i, value in enumerate(unique):
-		lookup[value] = i
-	for row in dataset:
-		row[column] = lookup[row[column]]
-	return lookup
+# Calculate the standard deviation of a list of numbers
+def stdev(numbers):
+	avg = mean(numbers)
+	variance = sum([(x-avg)**2 for x in numbers]) / float(len(numbers)-1)
+	return sqrt(variance)
 
-# Split a dataset into k folds
+# Calculate the mean, stdev and count for each column in a dataset
+def summarize_dataset(dataset):
+	summaries = [(mean(column), stdev(column), len(column)) for column in zip(*dataset)]
+	del(summaries[-1])
+	return summaries
+
+# Step 3 - Summarize Data By Class =>
+# Split dataset by class then calculate statistics for each row
+def summarize_by_class(dataset):
+	separated = separate_by_class(dataset)
+	summaries = dict()
+	for class_value, rows in separated.items():
+		summaries[class_value] = summarize_dataset(rows)
+	return summaries
+
+# Step 4 - Gaussian Probability Density Function =>
+# calculate the Gaussian probability distribution function for x
+def calculate_probability(x, mean, stdev):
+	exponent = exp(-((x-mean)**2 / (2 * stdev**2 )))
+	return (1 / (sqrt(2 * pi) * stdev)) * exponent
+
+# Step 5 - Class Probabilities
+def calculate_class_probabilities(summaries, row):
+	total_rows = sum([summaries[label][0][2] for label in summaries])
+	probabilities = dict()
+	for class_value, class_summaries in summaries.items():
+		probabilities[class_value] = summaries[class_value][0][2]/float(total_rows)
+		for i in range(len(class_summaries)):
+			mean, stdev, count = class_summaries[i]
+			probabilities[class_value] *= calculate_probability(row[i], mean, stdev)
+	return probabilities
+
+# Few more functions for implementing the algorithm
 def cross_validation_split(dataset, n_folds):
 	dataset_split = list()
 	dataset_copy = list(dataset)
@@ -73,46 +106,6 @@ def evaluate_algorithm(dataset, algorithm, n_folds, *args):
 		scores.append(accuracy)
 	return scores
 
-# Calculate the mean of a list of numbers
-def mean(numbers):
-	return sum(numbers)/float(len(numbers))
-
-# Calculate the standard deviation of a list of numbers
-def stdev(numbers):
-	avg = mean(numbers)
-	variance = sum([(x-avg)**2 for x in numbers]) / float(len(numbers)-1)
-	return sqrt(variance)
-
-# Calculate the mean, stdev and count for each column in a dataset
-def summarize_dataset(dataset):
-	summaries = [(mean(column), stdev(column), len(column)) for column in zip(*dataset)]
-	del(summaries[-1])
-	return summaries
-
-# Split dataset by class then calculate statistics for each row
-def summarize_by_class(dataset):
-	separated = separate_by_class(dataset)
-	summaries = dict()
-	for class_value, rows in separated.items():
-		summaries[class_value] = summarize_dataset(rows)
-	return summaries
-
-# Calculate the Gaussian probability distribution function for x
-def calculate_probability(x, mean, stdev):
-	exponent = exp(-((x-mean)**2 / (2 * stdev**2 )))
-	return (1 / (sqrt(2 * pi) * stdev)) * exponent
-
-# Calculate the probabilities of predicting each class for a given row
-def calculate_class_probabilities(summaries, row):
-	total_rows = sum([summaries[label][0][2] for label in summaries])
-	probabilities = dict()
-	for class_value, class_summaries in summaries.items():
-		probabilities[class_value] = summaries[class_value][0][2]/float(total_rows)
-		for i in range(len(class_summaries)):
-			mean, stdev, _ = class_summaries[i]
-			probabilities[class_value] *= calculate_probability(row[i], mean, stdev)
-	return probabilities
-
 # Predict the class for a given row
 def predict(summaries, row):
 	probabilities = calculate_class_probabilities(summaries, row)
@@ -132,38 +125,27 @@ def naive_bayes(train, test):
 		predictions.append(output)
 	return(predictions)
 
-##################################
-# Step 1 - separate by class =>
-# Split the dataset by class values, returns a dictionary
-def separate_by_class(filename):
-	separated = dict()
-	dataset = open(filename, "r")
-	line = dataset.readline()
-	while line != '':  # The EOF char is an empty string
-		data = line.split(r",")
-		vector = data[1:]
-		class_value = "edible" if data[0] == "e" else "poisonous"
-		if (class_value not in separated):
-			separated[class_value] = list()
-		separated[class_value].append(vector)
-		line = dataset.readline()
-	return separated
+def load_dataset(filename):
+	with open(filename, 'r') as file:
+		readerDataset = reader(file)
+		for row in readerDataset:
+			if not row:
+				continue
+			dataset.append(row)
+	return dataset
 
 # Test Naive Bayes on Mushroom dataset
-dictionary = separate_by_class("Mushroom dataset/agaricus-lepiota.data")
-print(dictionary)
-
-# seed(1)
-# filename = 'iris.csv'
-# dataset = load_csv(filename)
-# for i in range(len(dataset[0])-1):
-# 	str_column_to_float(dataset, i)
-# # convert class column to integers
-# str_column_to_int(dataset, len(dataset[0])-1)
-# # evaluate algorithm
-# n_folds = 5
-# scores = evaluate_algorithm(dataset, naive_bayes, n_folds)
-# print('Scores: %s' % scores)
-# print('Mean Accuracy: %.3f%%' % (sum(scores)/float(len(scores))))
+seed(1)
+filename = "Mushroom dataset/agaricus-lepiota.data"
+dataset = load_dataset(filename)
+for i in range(len(dataset[0])-1):
+	str_column_to_float(dataset, i)
+# convert class column to integers
+str_column_to_int(dataset, len(dataset[0])-1)
+# evaluate algorithm
+n_folds = 5
+scores = evaluate_algorithm(dataset, naive_bayes, n_folds)
+print('Scores: %s' % scores)
+print('Mean Accuracy: %.3f%%' % (sum(scores)/float(len(scores))))
 
 
