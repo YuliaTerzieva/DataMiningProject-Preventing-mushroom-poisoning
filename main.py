@@ -24,15 +24,10 @@ def separate_by_class(filename):
 	return separated
 
 # Step 2 - summarize Dataset =>
-# Calculate the mean of a list of numbers
-def mean(numbers):
-	return sum(numbers)/float(len(numbers))
+
 
 # Calculate the standard deviation of a list of numbers
-def stdev(numbers):
-	avg = mean(numbers)
-	variance = sum([(x-avg)**2 for x in numbers]) / float(len(numbers)-1)
-	return sqrt(variance)
+
 
 # Calculate the mean, stdev and count for each column in a dataset
 def summarize_dataset(dataset):
@@ -149,3 +144,11 @@ print('Scores: %s' % scores)
 print('Mean Accuracy: %.3f%%' % (sum(scores)/float(len(scores))))
 
 
+############
+# Im writing here psudocode that we can use after
+# first in order to predict a new mushroom we need to make a model
+# i guess that would be just -
+# for each attrubute take the frequency of Poisonous|that attribute and Edible|that attribute
+# the if we have sth like : p,x,s,n,t,p,f,c,n,k,e,e,s,s,w,w,p,w,o,p,k,s,u
+# and we need to clasify that we need to take :
+# where P is poisonous=> P(P) * P(p|P) * P(x|P) * P(s|P)..... / P(p) * P(x) * P(s)... and do the same for Edible and check which has the higer probbaility?
