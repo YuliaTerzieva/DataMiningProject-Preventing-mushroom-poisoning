@@ -123,7 +123,7 @@ def run_test(name, title):
     dataset = load_dataset(name)
     X = dataset[:, 1:]
     y = dataset[:, 0]
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random_state=1)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=1)
     logistic_regression(X_train, X_test, y, y_train, y_test, title)
     decision_tree(X_train, X_test, y, y_train, y_test, title)
     random_forest(X_train, X_test, y, y_train, y_test, title)
@@ -133,6 +133,9 @@ def run_test(name, title):
 # Test Algorithms on datasets
 mushroom = "Mushroom dataset/agaricus-lepiota.data"
 tumor = "Mushroom dataset/primary-tumor.data"
+chess = "Mushroom dataset/kr-vs-kp.data"
 run_test(mushroom, "mushroom")
 print()
 run_test(tumor, "tumor")
+print()
+run_test(tumor, "chess")
