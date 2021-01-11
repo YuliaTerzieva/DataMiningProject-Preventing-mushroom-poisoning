@@ -134,8 +134,11 @@ def run_test(name, title):
 mushroom = "Mushroom dataset/agaricus-lepiota.data"
 tumor = "Mushroom dataset/primary-tumor.data"
 chess = "Mushroom dataset/kr-vs-kp.data"
+tictactoe = "Mushroom dataset/tic-tac-toe.data"
 run_test(mushroom, "mushroom")
 print()
 run_test(tumor, "tumor")
 print()
-run_test(tumor, "chess")
+run_test(chess, "chess")
+print()
+run_test(tictactoe, "tictactoe")
