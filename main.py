@@ -4,7 +4,6 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.linear_model import LogisticRegression
 import numpy as np
 from sklearn.metrics import accuracy_score
-from sklearn.metrics import confusion_matrix
 from sklearn.model_selection import train_test_split
 from sklearn import svm
 
@@ -38,22 +37,23 @@ def encode_attributes(X):
 
 
 # Encode the train and test data
-def encode_train_test(X_train, X_test, y_train, y_test):
+def encode_train_test(X_train, X_test, y, y_train, y_test):
     onehot_encoder, X_train_encoded = encode_attributes(X_train)
     X_test_encoded = onehot_encoder.transform(X_test).toarray()
-    le, y_train_encoded = encode_labels(y_train)
+    le, y_encoded = encode_labels(y)
+    y_train_encoded = le.transform(y_train)
     y_test_encoded = le.transform(y_test)
     return X_train_encoded, X_test_encoded, y_train_encoded, y_test_encoded
 
 
 # Logistic regression using sklearn
-def logistic_regression(X_train, X_test, y_train, y_test):
+def logistic_regression(X_train, X_test, y, y_train, y_test, name):
     # Encode the train and test data
-    X_train_encoded, X_test_encoded, y_train_encoded, y_test_encoded = encode_train_test(X_train, X_test, y_train,
+    X_train_encoded, X_test_encoded, y_train_encoded, y_test_encoded = encode_train_test(X_train, X_test, y, y_train,
                                                                                          y_test)
 
     # Fit the model
-    model = LogisticRegression()
+    model = LogisticRegression(max_iter=500)
     model.fit(X_train_encoded, y_train_encoded)
 
     # Predict the test cases
@@ -61,14 +61,12 @@ def logistic_regression(X_train, X_test, y_train, y_test):
 
     # Evaluate predictions
     accuracy = accuracy_score(y_test_encoded, y_predicted)
-    tn, fp, fn, tp = confusion_matrix(y_test_encoded, y_predicted).ravel()
-    print('True positive rate of logistic regression on mushroom dataset: ', (tp/(tp+fp))*100, '%')
-    print('False positive rate of logistic regression on mushroom dataset: ', (fp/(tp+fp))*100, '%')
-    print('Accuracy of logistic regression on mushroom dataset: ', accuracy * 100, "%\n")
+    print('Accuracy of logistic regression on ', name, ' dataset: ', accuracy * 100, "%")
 
-def random_forest(X_train, X_test, y_train, y_test):
+
+def random_forest(X_train, X_test, y, y_train, y_test, name):
     # Encode the train and test data
-    X_train_encoded, X_test_encoded, y_train_encoded, y_test_encoded = encode_train_test(X_train, X_test, y_train,
+    X_train_encoded, X_test_encoded, y_train_encoded, y_test_encoded = encode_train_test(X_train, X_test, y, y_train,
                                                                                          y_test)
 
     # Fit the model
@@ -80,15 +78,12 @@ def random_forest(X_train, X_test, y_train, y_test):
 
     # Evaluate predictions
     accuracy = accuracy_score(y_test_encoded, y_predicted)
-    tn, fp, fn, tp = confusion_matrix(y_test_encoded, y_predicted).ravel()
-    print('True positive rate of random forests on mushroom dataset: ', (tp / (tp + fp)) * 100, '%')
-    print('False positive rate of random forests on mushroom dataset: ', (fp / (tp + fp)) * 100, '%')
-    print('Accuracy of random forests on mushroom dataset: ', accuracy * 100, "%\n")
+    print('Accuracy of random forests on ', name, ' dataset: ', accuracy * 100, "%")
 
 
-def support_vector_machines(X_train, X_test, y_train, y_test):
+def support_vector_machines(X_train, X_test, y, y_train, y_test, name):
     # Encode the train and test data
-    X_train_encoded, X_test_encoded, y_train_encoded, y_test_encoded = encode_train_test(X_train, X_test, y_train,
+    X_train_encoded, X_test_encoded, y_train_encoded, y_test_encoded = encode_train_test(X_train, X_test, y, y_train,
                                                                                          y_test)
 
     # Fit the model
@@ -100,18 +95,22 @@ def support_vector_machines(X_train, X_test, y_train, y_test):
 
     # Evaluate predictions
     accuracy = accuracy_score(y_test_encoded, y_predicted)
-    tn, fp, fn, tp = confusion_matrix(y_test_encoded, y_predicted).ravel()
-    print('True positive rate of Support Vector Machines on mushroom dataset: ', (tp / (tp + fp)) * 100, '%')
-    print('False positive rate of Support Vector Machines on mushroom dataset: ', (fp / (tp + fp)) * 100, '%')
-    print('Accuracy of Support Vector Machines on mushroom dataset: ', accuracy * 100, '%\n')
+    print('Accuracy of Support Vector Machines on ', name, ' dataset: ', accuracy * 100, '%')
 
 
-# Test Algorithms on Mushroom dataset
-filename = "Mushroom dataset/agaricus-lepiota.data"
-dataset = load_dataset(filename)
-X = dataset[:, 1:]
-y = dataset[:, 0]
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33)
-logistic_regression(X_train, X_test, y_train, y_test)
-random_forest(X_train, X_test, y_train, y_test)
-support_vector_machines(X_train, X_test, y_train, y_test)
+def run_test(name, title):
+    dataset = load_dataset(name)
+    X = dataset[:, 1:]
+    y = dataset[:, 0]
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random_state=1)
+    logistic_regression(X_train, X_test, y, y_train, y_test, title)
+    random_forest(X_train, X_test, y, y_train, y_test, title)
+    support_vector_machines(X_train, X_test, y, y_train, y_test, title)
+
+
+# Test Algorithms on datasets
+mushroom = "Mushroom dataset/agaricus-lepiota.data"
+tumor = "Mushroom dataset/primary-tumor.data"
+run_test(mushroom, "mushroom")
+print()
+run_test(tumor, "tumor")
