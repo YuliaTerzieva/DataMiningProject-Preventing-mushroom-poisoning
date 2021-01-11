@@ -119,10 +119,20 @@ def support_vector_machines(X_train, X_test, y, y_train, y_test, name):
     print('Accuracy of Support Vector Machines on ', name, ' dataset: ', accuracy * 100, '%')
 
 
-def run_test(name, title):
+def run_test_front(name, title):
     dataset = load_dataset(name)
     X = dataset[:, 1:]
     y = dataset[:, 0]
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=1)
+    logistic_regression(X_train, X_test, y, y_train, y_test, title)
+    decision_tree(X_train, X_test, y, y_train, y_test, title)
+    random_forest(X_train, X_test, y, y_train, y_test, title)
+    support_vector_machines(X_train, X_test, y, y_train, y_test, title)
+
+def run_test_end(name, title):
+    dataset = load_dataset(name)
+    X = dataset[:, : -1]
+    y = dataset[:, -1]
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=1)
     logistic_regression(X_train, X_test, y, y_train, y_test, title)
     decision_tree(X_train, X_test, y, y_train, y_test, title)
@@ -135,10 +145,10 @@ mushroom = "Mushroom dataset/agaricus-lepiota.data"
 tumor = "Mushroom dataset/primary-tumor.data"
 chess = "Mushroom dataset/kr-vs-kp.data"
 tictactoe = "Mushroom dataset/tic-tac-toe.data"
-run_test(mushroom, "mushroom")
+run_test_front(mushroom, "mushroom")
 print()
-run_test(tumor, "tumor")
+run_test_front(tumor, "tumor")
 print()
-run_test(chess, "chess")
+run_test_end(chess, "chess")
 print()
-run_test(tictactoe, "tictactoe")
+run_test_end(tictactoe, "tictactoe")
