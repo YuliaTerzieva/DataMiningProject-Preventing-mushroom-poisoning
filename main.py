@@ -47,7 +47,7 @@ def encode_train_test(X_train, X_test, y, y_train, y_test):
 
 
 # Logistic regression using sklearn
-def logistic_regression(X_train, X_test, y, y_train, y_test):
+def logistic_regression(X_train, X_test, y, y_train, y_test, name):
     # Encode the train and test data
     X_train_encoded, X_test_encoded, y_train_encoded, y_test_encoded = encode_train_test(X_train, X_test, y, y_train,
                                                                                          y_test)
@@ -61,10 +61,10 @@ def logistic_regression(X_train, X_test, y, y_train, y_test):
 
     # Evaluate predictions
     accuracy = accuracy_score(y_test_encoded, y_predicted)
-    print('Accuracy of logistic regression on mushroom dataset: ', accuracy * 100, "%\n")
+    print('Accuracy of logistic regression on ', name, ' dataset: ', accuracy * 100, "%")
 
 
-def random_forest(X_train, X_test, y, y_train, y_test):
+def random_forest(X_train, X_test, y, y_train, y_test, name):
     # Encode the train and test data
     X_train_encoded, X_test_encoded, y_train_encoded, y_test_encoded = encode_train_test(X_train, X_test, y, y_train,
                                                                                          y_test)
@@ -78,10 +78,10 @@ def random_forest(X_train, X_test, y, y_train, y_test):
 
     # Evaluate predictions
     accuracy = accuracy_score(y_test_encoded, y_predicted)
-    print('Accuracy of random forests on mushroom dataset: ', accuracy * 100, "%\n")
+    print('Accuracy of random forests on ', name, ' dataset: ', accuracy * 100, "%")
 
 
-def support_vector_machines(X_train, X_test, y, y_train, y_test):
+def support_vector_machines(X_train, X_test, y, y_train, y_test, name):
     # Encode the train and test data
     X_train_encoded, X_test_encoded, y_train_encoded, y_test_encoded = encode_train_test(X_train, X_test, y, y_train,
                                                                                          y_test)
@@ -95,16 +95,22 @@ def support_vector_machines(X_train, X_test, y, y_train, y_test):
 
     # Evaluate predictions
     accuracy = accuracy_score(y_test_encoded, y_predicted)
-    print('Accuracy of Support Vector Machines on mushroom dataset: ', accuracy * 100, '%\n')
+    print('Accuracy of Support Vector Machines on ', name, ' dataset: ', accuracy * 100, '%')
 
 
-# Test Algorithms on Mushroom dataset
+def run_test(name, title):
+    dataset = load_dataset(name)
+    X = dataset[:, 1:]
+    y = dataset[:, 0]
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random_state=1)
+    logistic_regression(X_train, X_test, y, y_train, y_test, title)
+    random_forest(X_train, X_test, y, y_train, y_test, title)
+    support_vector_machines(X_train, X_test, y, y_train, y_test, title)
+
+
+# Test Algorithms on datasets
 mushroom = "Mushroom dataset/agaricus-lepiota.data"
 tumor = "Mushroom dataset/primary-tumor.data"
-dataset = load_dataset(tumor)
-X = dataset[:, 1:]
-y = dataset[:, 0]
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random_state=None)
-logistic_regression(X_train, X_test, y, y_train, y_test)
-random_forest(X_train, X_test, y, y_train, y_test)
-support_vector_machines(X_train, X_test, y, y_train, y_test)
+run_test(mushroom, "mushroom")
+print()
+run_test(tumor, "tumor")
