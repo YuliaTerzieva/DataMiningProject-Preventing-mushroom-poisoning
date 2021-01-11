@@ -7,8 +7,10 @@ from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
 from sklearn import svm
 
-
 # Load the dataset into a numpy array
+from sklearn.tree import DecisionTreeClassifier
+
+
 def load_dataset(filename):
     dataset = list()
     with open(filename, 'r') as file:
@@ -64,6 +66,25 @@ def logistic_regression(X_train, X_test, y, y_train, y_test, name):
     print('Accuracy of logistic regression on ', name, ' dataset: ', accuracy * 100, "%")
 
 
+# Decision tree classifier using sklearn
+def decision_tree(X_train, X_test, y, y_train, y_test, name):
+    # Encode the train and test data
+    X_train_encoded, X_test_encoded, y_train_encoded, y_test_encoded = encode_train_test(X_train, X_test, y,
+                                                                                         y_train,
+                                                                                         y_test)
+
+    # Fit the model
+    model = DecisionTreeClassifier()
+    model.fit(X_train_encoded, y_train_encoded)
+
+    # Predict the test cases
+    y_predicted = model.predict(X_test_encoded)
+
+    # Evaluate predictions
+    accuracy = accuracy_score(y_test_encoded, y_predicted)
+    print('Accuracy of decision trees on ', name, ' dataset: ', accuracy * 100, "%")
+
+
 def random_forest(X_train, X_test, y, y_train, y_test, name):
     # Encode the train and test data
     X_train_encoded, X_test_encoded, y_train_encoded, y_test_encoded = encode_train_test(X_train, X_test, y, y_train,
@@ -104,6 +125,7 @@ def run_test(name, title):
     y = dataset[:, 0]
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random_state=1)
     logistic_regression(X_train, X_test, y, y_train, y_test, title)
+    decision_tree(X_train, X_test, y, y_train, y_test, title)
     random_forest(X_train, X_test, y, y_train, y_test, title)
     support_vector_machines(X_train, X_test, y, y_train, y_test, title)
 
