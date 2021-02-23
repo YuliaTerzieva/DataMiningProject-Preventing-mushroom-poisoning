@@ -91,7 +91,7 @@ def random_forest(X_train, X_test, y, y_train, y_test, name):
                                                                                          y_test)
 
     # Fit the model
-    regressor = RandomForestRegressor(n_estimators=20, random_state=1)
+    regressor = RandomForestRegressor(n_estimators=100, random_state=1)
     regressor.fit(X_train_encoded, y_train_encoded)
 
     # Predict the test cases
