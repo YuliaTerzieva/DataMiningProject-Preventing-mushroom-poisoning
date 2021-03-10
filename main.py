@@ -6,6 +6,7 @@ import numpy as np
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
 from sklearn import svm
+from sklearn.cluster import KMeans
 
 # Load the dataset into a numpy array
 from sklearn.tree import DecisionTreeClassifier
@@ -91,7 +92,7 @@ def random_forest(X_train, X_test, y, y_train, y_test, name):
                                                                                          y_test)
 
     # Fit the model
-    regressor = RandomForestRegressor(n_estimators=100, random_state=1)
+    regressor = RandomForestRegressor(n_estimators=20, random_state=1)
     regressor.fit(X_train_encoded, y_train_encoded)
 
     # Predict the test cases
@@ -118,6 +119,11 @@ def support_vector_machines(X_train, X_test, y, y_train, y_test, name):
     accuracy = accuracy_score(y_test_encoded, y_predicted)
     print('Accuracy of Support Vector Machines on ', name, ' dataset: ', accuracy * 100, '%')
 
+def clustering(X, y, name):
+    kmeans_labels = KMeans(n_clusters=2, random_state=1).fit_predict(encode_attributes(X)[1])
+    accuracy = accuracy_score(encode_labels(y)[1], kmeans_labels)
+    print('Accuracy of KMeans clustering of the data on ', name, ' dataset: ', accuracy * 100, '%')
+
 
 def run_test_front(name, title):
     dataset = load_dataset(name)
@@ -128,6 +134,7 @@ def run_test_front(name, title):
     decision_tree(X_train, X_test, y, y_train, y_test, title)
     random_forest(X_train, X_test, y, y_train, y_test, title)
     support_vector_machines(X_train, X_test, y, y_train, y_test, title)
+    clustering(X, y, title)
 
 def run_test_end(name, title):
     dataset = load_dataset(name)
@@ -138,6 +145,7 @@ def run_test_end(name, title):
     decision_tree(X_train, X_test, y, y_train, y_test, title)
     random_forest(X_train, X_test, y, y_train, y_test, title)
     support_vector_machines(X_train, X_test, y, y_train, y_test, title)
+    clustering(X, y, title)
 
 
 # Test Algorithms on datasets

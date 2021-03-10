@@ -131,6 +131,7 @@ def load_dataset(filename):
 			dataset.append(row)
 	return np.array(dataset)
 
+
 # Test Naive Bayes on Mushroom dataset
 seed(1)
 filename = "Mushroom dataset/agaricus-lepiota.data"
