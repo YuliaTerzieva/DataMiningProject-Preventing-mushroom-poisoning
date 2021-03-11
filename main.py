@@ -7,11 +7,11 @@ from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
 from sklearn import svm
 from sklearn.cluster import KMeans
-
-# Load the dataset into a numpy array
+from sklearn.metrics import adjusted_rand_score
 from sklearn.tree import DecisionTreeClassifier
 
 
+# Load the dataset into a numpy array
 def load_dataset(filename):
     dataset = list()
     with open(filename, 'r') as file:
@@ -86,6 +86,7 @@ def decision_tree(X_train, X_test, y, y_train, y_test, name):
     print('Accuracy of decision trees on ', name, ' dataset: ', accuracy * 100, "%")
 
 
+# Random forest classifier using sklearn
 def random_forest(X_train, X_test, y, y_train, y_test, name):
     # Encode the train and test data
     X_train_encoded, X_test_encoded, y_train_encoded, y_test_encoded = encode_train_test(X_train, X_test, y, y_train,
@@ -103,6 +104,7 @@ def random_forest(X_train, X_test, y, y_train, y_test, name):
     print('Accuracy of random forests on ', name, ' dataset: ', accuracy * 100, "%")
 
 
+# Support Vector Machines classifier using sklearn
 def support_vector_machines(X_train, X_test, y, y_train, y_test, name):
     # Encode the train and test data
     X_train_encoded, X_test_encoded, y_train_encoded, y_test_encoded = encode_train_test(X_train, X_test, y, y_train,
@@ -119,13 +121,18 @@ def support_vector_machines(X_train, X_test, y, y_train, y_test, name):
     accuracy = accuracy_score(y_test_encoded, y_predicted)
     print('Accuracy of Support Vector Machines on ', name, ' dataset: ', accuracy * 100, '%')
 
+
+# Clustering using KMeans from sklearn
 def clustering(X, y, name):
+    # Create clustering of 2 clusters and predict labels
     kmeans_labels = KMeans(n_clusters=2, random_state=1).fit_predict(encode_attributes(X)[1])
-    accuracy = accuracy_score(encode_labels(y)[1], kmeans_labels)
-    print('Accuracy of KMeans clustering of the data on ', name, ' dataset: ', accuracy * 100, '%')
+    
+    # Calculate and show rand score of clustering
+    rand_score = adjusted_rand_score(encode_labels(y)[1], kmeans_labels)
+    print('Rand score of KMeans clustering of the data on ', name, ' dataset: ', rand_score)
 
 
-def run_test_front(name, title):
+def run_tests(name, title):
     dataset = load_dataset(name)
     X = dataset[:, 1:]
     y = dataset[:, 0]
@@ -136,27 +143,7 @@ def run_test_front(name, title):
     support_vector_machines(X_train, X_test, y, y_train, y_test, title)
     clustering(X, y, title)
 
-def run_test_end(name, title):
-    dataset = load_dataset(name)
-    X = dataset[:, : -1]
-    y = dataset[:, -1]
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=1)
-    logistic_regression(X_train, X_test, y, y_train, y_test, title)
-    decision_tree(X_train, X_test, y, y_train, y_test, title)
-    random_forest(X_train, X_test, y, y_train, y_test, title)
-    support_vector_machines(X_train, X_test, y, y_train, y_test, title)
-    clustering(X, y, title)
 
-
-# Test Algorithms on datasets
+# Test Algorithms on dataset
 mushroom = "Mushroom dataset/agaricus-lepiota.data"
-tumor = "Mushroom dataset/primary-tumor.data"
-chess = "Mushroom dataset/kr-vs-kp.data"
-tictactoe = "Mushroom dataset/tic-tac-toe.data"
-run_test_front(mushroom, "mushroom")
-print()
-run_test_front(tumor, "tumor")
-print()
-run_test_end(chess, "chess")
-print()
-run_test_end(tictactoe, "tictactoe")
+run_tests(mushroom, "mushroom")
