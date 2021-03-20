@@ -152,7 +152,7 @@ for i in range(len(dataset[0])-1):
 # convert class column to integers
 str_column_to_int(dataset, len(dataset[0])-1)
 # evaluate algorithm
-n_folds = 5
+n_folds = 7
 scores = evaluate_algorithm(dataset, naive_bayes, n_folds)
 print('Scores: %s' % scores)
 print('Mean Accuracy: %.3f%%' % (sum(scores)/float(len(scores))))

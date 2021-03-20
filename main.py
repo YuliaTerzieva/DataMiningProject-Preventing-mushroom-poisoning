@@ -9,6 +9,7 @@ from sklearn import svm
 from sklearn.cluster import KMeans
 from sklearn.metrics import adjusted_rand_score
 from sklearn.tree import DecisionTreeClassifier
+import matplotlib.pyplot as plt
 
 
 # Load the dataset into a numpy array
@@ -137,6 +138,13 @@ def run_tests(name, title):
     X = dataset[:, 1:]
     y = dataset[:, 0]
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=1)
+    plt.hist(y_train, color="purple", label="Train")
+    plt.hist(y_test, color="yellow", label="Test")
+    plt.xlabel("Label -> P=poisonous, E=edible")
+    plt.ylabel("Number of instances")
+    plt.title("Distribution of mushrooms in test and train sets")
+    plt.legend()
+    plt.show()
     logistic_regression(X_train, X_test, y, y_train, y_test, title)
     decision_tree(X_train, X_test, y, y_train, y_test, title)
     random_forest(X_train, X_test, y, y_train, y_test, title)
@@ -147,3 +155,4 @@ def run_tests(name, title):
 # Test Algorithms on dataset
 mushroom = "Mushroom dataset/agaricus-lepiota.data"
 run_tests(mushroom, "mushroom")
+
