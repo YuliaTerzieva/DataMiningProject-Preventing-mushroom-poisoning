@@ -3,7 +3,7 @@ from sklearn import preprocessing
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.linear_model import LogisticRegression
 import numpy as np
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, classification_report
 from sklearn.model_selection import train_test_split
 from sklearn import svm
 from sklearn.metrics import roc_curve, auc
@@ -162,7 +162,7 @@ def decision_tree(X_train, X_test, y, y_train, y_test, name):
     # Evaluate predictions
     accuracy = accuracy_score(y_test_en, y_predicted)
     print('Accuracy of decision trees on ', name, ' dataset: ', accuracy * 100, "%")
-    
+
     #tuningMaxDepthDTC(X_train_en, y_train_en, X_test_en, y_test_en)
     #tuningMinSampleSplit(X_train_en, y_train_en, X_test_en, y_test_en)
 
