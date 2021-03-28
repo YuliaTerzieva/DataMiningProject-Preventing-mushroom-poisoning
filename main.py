@@ -53,13 +53,41 @@ def encode_train_test(X_train, X_test, y, y_train, y_test):
 
 
 # Logistic regression using sklearn
+def tuningCLR(X_train_encoded, X_test_encoded, y_train_encoded, y_test_encoded):
+    C_param_range = [0.001, 0.01, 0.1, 1, 10, 100]
+    train_results = []
+    test_results = []
+
+    for i in C_param_range:
+        model = LogisticRegression(C=i, max_iter=200)
+        model.fit(X_train_encoded, y_train_encoded)
+
+        train_pred = model.predict(X_train_encoded)
+        false_positive_rate, true_positive_rate, thresholds = roc_curve(y_train_encoded, train_pred)
+        roc_auc = auc(false_positive_rate, true_positive_rate)
+        # Add auc score to previous train results
+        train_results.append(roc_auc)
+        y_pred = model.predict(X_test_encoded)
+        false_positive_rate, true_positive_rate, thresholds = roc_curve(y_test_encoded, y_pred)
+        roc_auc = auc(false_positive_rate, true_positive_rate)
+        # Add auc score to previous test results
+        test_results.append(roc_auc)
+
+    line1, = plt.plot(C_param_range, train_results, "b", label="TrainAUC")
+    line2, = plt.plot(C_param_range, test_results, "r", label="TestAUC")
+    plt.legend(handler_map={line1: HandlerLine2D(numpoints=2)})
+    plt.ylabel("AUC score")
+    plt.xlabel("C")
+    plt.show()
+
+
 def logistic_regression(X_train, X_test, y, y_train, y_test, name):
     # Encode the train and test data
     X_train_encoded, X_test_encoded, y_train_encoded, y_test_encoded = encode_train_test(X_train, X_test, y, y_train,
                                                                                          y_test)
 
     # Fit the model
-    model = LogisticRegression()
+    model = LogisticRegression(C=10, max_iter=200)
     model.fit(X_train_encoded, y_train_encoded)
 
     # Predict the test cases
@@ -68,6 +96,8 @@ def logistic_regression(X_train, X_test, y, y_train, y_test, name):
     # Evaluate predictions
     accuracy = accuracy_score(y_test_encoded, y_predicted)
     print('Accuracy of logistic regression on ', name, ' dataset: ', accuracy * 100, "%")
+
+    #tuningCLR(X_train_encoded, X_test_encoded, y_train_encoded, y_test_encoded)
 
 
 # Decision tree classifier using sklearn
