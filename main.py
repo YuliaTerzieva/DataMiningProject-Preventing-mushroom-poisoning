@@ -54,7 +54,7 @@ def encode_train_test(X_train, X_test, y, y_train, y_test):
 
 # Logistic regression using sklearn
 def tuningCLR(X_train_encoded, X_test_encoded, y_train_encoded, y_test_encoded):
-    C_param_range = [0.001, 0.01, 0.1, 1, 10, 100]
+    C_param_range = np.linspace(0.5, 5.0, endpoint=True)
     train_results = []
     test_results = []
 
@@ -87,7 +87,7 @@ def logistic_regression(X_train, X_test, y, y_train, y_test, name):
                                                                                          y_test)
 
     # Fit the model
-    model = LogisticRegression(C=10, max_iter=200)
+    model = LogisticRegression(C=2.5, max_iter=200)
     model.fit(X_train_encoded, y_train_encoded)
 
     # Predict the test cases
